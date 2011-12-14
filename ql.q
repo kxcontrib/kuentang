@@ -1,6 +1,6 @@
 / the file quant.q is needed from gordon baker
 / gbkr.com
-\l quant.q
+/\l quant.q
 
 \d .ql_impl
 
@@ -72,7 +72,10 @@ binbaum[98h]:{
 binbaum[0h]:{.ql.binbaum[99h;`spot`rate`vola`matur`num`payoff!x til 6 ]};
 
 randn:()!();
-randn[1]: {:x#1_raze{ u*sqrt( -2f*log s ) % s:last {u$u::-1+2?2.0}\[1<;2]}\[`int$ x % 2 ;0] }; /int
+randn[1]: {hn:`int$ x % 2;
+		   x#raze exec  s*f,s*g from select s:sqrt -2.0*log u1,f:cos .quant.pi2 * u2,g:sin .quant.pi2 * u2 from ([]u1:hn?1.0;u2:hn?1.0)
+		   };
+/ old implementation, this is also very bad randn[1]: {:x#1_raze{ u*sqrt -2f*log[s] % s:{u$u::-1+2?2.0}/[1<;2]}\[`int$ x % 2 ;0] };
 / old implementation, which is very bad: randn[2]: {a1::x[0];a2:x[1]; flip {randn[1] a1} each til a2 };  
 randn[2]: {a1::x[0];a2:x[1]; (a1,a2) # randn[1] a1*a2 };
 
@@ -175,7 +178,17 @@ cholcov:{[x] v::x; dim::count v; ii:til dim;
         ind:til i; v[i;i]:sqrt v[i;i] -sum v[i;ind]*v[i;ind]; 
     } each ii;
     :flip v*{not x<\:x} til dim
-    };
-mc:{[x] .ql_impl.mc x};
-integrate: .ql_impl.integrate; 
+    }
+mc:{[x] .ql_impl.mc x}
+integrate: .ql_impl.integrate
+solver:{ raze lsq[enlist y;flip x] }
+diag:{x @'til count x}
+zeros:{[x;y] (x,y)#*[x;y]#0f }
+ones:{[x] til[x]{[x;y] y[x]:1f; :y}'zeros[x;x] }
+
+/ covarinace matrix
+cvm:{(x+flip(not n=\:n)*x:(n#'0.0),'(x$/:'(n:til count x)_\:x)%count first x)-a*\:a:avg each x}
+
+/ correlation matrix
+crm:{cvm[x]%u*/:u:dev each x}
 \d .
