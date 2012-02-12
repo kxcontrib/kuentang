@@ -1,0 +1,7 @@
+LIBRARY "glib"
+
+EXPORTS
+	foo
+	randn
+	sum
+	vwap
