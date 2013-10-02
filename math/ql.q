@@ -36,9 +36,9 @@ bls[`99]:{[x]
     };
 
 bls[`impl]:{ [x] p::`type_ _x;
-    ww:{[x] 1e-10< abs p[`price]-.ql.bls p,(`type_`vola)!(`bls;x)  };
+    www:{[x] 1e-10< abs p[`price]-.ql.bls p,(`type_`vola)!(`bls;x)  };
     /ww:{[x] abs p[`price]-.ql.bls p,(`type_`vola)!(`bls;x)};
-    {[x] x+(p[`price]-.ql.bls p,(`type_`vola)!(`bls;x))  % .ql.bls p,(`type_`vola)!(`vega;x) }/[ww;0.65]
+    {[x] x+(p[`price]-.ql.bls p,(`type_`vola)!(`bls;x))  % .ql.bls p,(`type_`vola)!(`vega;x) }/[www;0.65]
     };
 
 / binomial tree
