@@ -1,4 +1,9 @@
 
+/ ql:localhost:8888::
+
+\p 8888
+
+\l quant.q
 \l ql.q
 / testing black scholes formula
 tab:flip `type_`direct`spot`strike`rate`vola`matur!(`bls`vega`delta`theta`vega`rho;`call;100;100;0.01;0.25;1.0);
@@ -25,9 +30,9 @@ update blsprice: .ql.bls res2 from res2:update type_:`bls, vola: .ql.bls tab2 fr
 / testing binomial tree
 \l ql.q
 t:([] spot:100;rate:0.01;vola:0.25;matur:1.0;num:2500;payoff:({x};{max 0,x-100};{max 0,100-x};{abs 100-x}));t
-update price: .ql.binbaum t from t
+/ update price: .ql.binbaum t from t
 update price: .ql.binbaum each t from t
-.ql.binbaum t
+
 
 / testing gaussian random number generator
 \l ql.q
@@ -153,7 +158,7 @@ avg cashflows{[x;y] sum x*y}\:dfactors;
 {([] time;path:path[x];pos:positions[x];d:deltas positions[x];
     cashflows:cashflows[x])} 0
 
-\ testing cholesky decomposition
+/ testing cholesky decomposition
 \l ql.q
 B:(1 2 3f; 0 4 3f; 0 0 3f);
 v:flip[B] mmu B;
@@ -259,3 +264,4 @@ reports:select maxx:max each pnl, minn:min each pnl, l:last each pnl from pnl:([
 select l, sums c from  select c:count[i] by 1 xbar l from reports
 select minn, sums c from  select c:count[i] % num by 1 xbar minn from reports
 select maxx, sums c from  select c:count[i] % num by 1 xbar maxx from reports
+

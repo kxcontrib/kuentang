@@ -6,7 +6,7 @@
 
 /---------------------------------------------------------------------------------------------------------------------
 / Finance
-phi:{[x] exp[neg (x xexp 2)%2f] % sqrt 2 * .quant.pi};
+phi:{ exp[neg (x xexp 2)%2f] % sqrt 2 * .quant.pi};
 / black scholes formula 
 bls:()!();
 bls[`d]:{[x] d1:(log[x[`spot] % x[`strike]] + x[`matur]*x[`rate]+0.5*x[`vola] xexp 2) %x[`vola] * sqrt x[`matur];
@@ -35,10 +35,10 @@ bls[`99]:{[x]
 	   $[`impl=x`type_; .ql_impl.bls[`impl] x; .ql_impl.bls[x`type_] x,.ql_impl.bls[`d] x ]]
     };
 
-bls[`impl]:{ [x] p::`type_ _x;
-    www:{[x] 1e-10< abs p[`price]-.ql.bls p,(`type_`vola)!(`bls;x)  };
+bls[`impl]:{ [x] p:`type_ _ x;
+    www:{[p;x] 1e-10< abs p[`price]-.ql.bls p,(`type_`vola)!(`bls;x)  } p ;
     /ww:{[x] abs p[`price]-.ql.bls p,(`type_`vola)!(`bls;x)};
-    {[x] x+(p[`price]-.ql.bls p,(`type_`vola)!(`bls;x))  % .ql.bls p,(`type_`vola)!(`vega;x) }/[www;0.65]
+    {[p;x] x+(p[`price]-.ql.bls p,(`type_`vola)!(`bls;x))  % .ql.bls p,(`type_`vola)!(`vega;x) }[p]/[www;0.65]
     };
 
 / binomial tree
@@ -47,14 +47,14 @@ binbaum[99h]:{[x]
     s:x[`spot];r:x[`rate];v:x[`vola];t:x[`matur];n:x[`num];f:x[`payoff];
     dt: t % n;
     beta: avg exp dt*(0f;v xexp 2)+(neg r;  r);
-    u:: beta + sqrt neg 1-beta xexp 2;
-    d:: reciprocal u;
-    p:: (neg d-exp r*dt) % u-d;
-    q::1-p;
-    S: s */ {[x](u xexp x;d xexp reverse x)} til n;
+    u: beta + sqrt neg 1-beta xexp 2;
+    d: reciprocal u;
+    p: (neg d-exp r*dt) % u-d;
+    q:1-p;
+    S: s */{[u;d;x](u xexp x;d xexp reverse x)}[u;d] til n;
     /V:{max 0,k-x} each S;
     V:f each S;
-    exp[neg r*t]*first {(p*1_x )+ q*-1_x}/[{not 1=count x};V]
+    exp[neg r*t]*first {[p;q;x](p*1_x )+ q*-1_x}[p;q]/[{not 1=count x};V]
     };
 binbaum[98h]:{
     break "dont use has bug";;
